@@ -21,3 +21,6 @@ primary_region = "iad"
     type = "connections"
     soft_limit = 50
     hard_limit = 75
+
+[deploy]
+  release_command = ""

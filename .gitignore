@@ -10,6 +10,7 @@ venv/
 # Data/model outputs
 data/processed/
 models/
+!models/.gitkeep
 emails/
 emails2/
 emails.zip

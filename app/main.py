@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .models import AnalyzeRequest, AnalyzeResponse, HealthResponse
 from .pipeline import EmailAnalyzer
@@ -10,6 +11,7 @@ from .settings import Settings, get_settings
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Phishing Email Analyzer", version="0.1.0")
+    settings = get_settings()
 
     app.add_middleware(
         CORSMiddleware,
@@ -21,7 +23,6 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     def startup_event() -> None:
-        settings = get_settings()
         try:
             analyzer = EmailAnalyzer.from_path(settings.model_path)
         except FileNotFoundError as exc:
@@ -58,6 +59,14 @@ def create_app() -> FastAPI:
         trimmed = combined[: settings.max_chars]
         result = analyzer.analyze(trimmed)
         return AnalyzeResponse(**result)
+
+    frontend_path = settings.frontend_build_path
+    if frontend_path and frontend_path.exists():
+        app.mount(
+            "/",
+            StaticFiles(directory=frontend_path, html=True),
+            name="frontend",
+        )
 
     return app
 

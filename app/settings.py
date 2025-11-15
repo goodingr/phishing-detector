@@ -25,6 +25,10 @@ class Settings(BaseSettings):
         description="Maximum number of characters to process for a single request.",
     )
     environment: str = Field(default="local")
+    frontend_build_path: Path | None = Field(
+        default=Path("frontend/build"),
+        description="Optional path to a built frontend directory to serve as static files.",
+    )
 
 
 @lru_cache

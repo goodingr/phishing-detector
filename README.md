@@ -33,3 +33,15 @@ Set `REACT_APP_API_BASE` (see `frontend/.env.example`) if the API is hosted else
 - `tests/`: backend pytest suite
 
 See `docs/development.md` for detailed workflows and testing instructions.
+
+## Docker Deployment
+1. Train the baseline model so `models/baseline_tfidf.joblib` exists.
+2. Build the image (multi-stage build compiles the React app):
+   ```bash
+   docker build -t phishing-detector .
+   ```
+3. Run it:
+   ```bash
+   docker run --rm -p 8000:8000 phishing-detector
+   ```
+   The container serves both the FastAPI backend (`/api/...`) and the React UI at `/`.

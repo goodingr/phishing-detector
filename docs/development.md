@@ -42,3 +42,19 @@ Create a `.env` file (see `.env.example`) to point the UI at the desired API bas
 - Frontend production build: `make build-frontend`
 
 These commands are suitable for local validation or plugging into CI pipelines.
+
+## 6. Docker Deployment
+1. Ensure a trained model exists at `models/baseline_tfidf.joblib` (`python scripts/train_model.py`).
+2. Build the container (multi-stage build compiles the React UI and bundles it with the FastAPI app):
+   ```bash
+   docker build -t phishing-detector .
+   ```
+3. Run the container, exposing the API/UI on port 8000:
+   ```bash
+   docker run --rm -p 8000:8000 phishing-detector
+   ```
+   - Override defaults with env vars if needed:
+     - `PHISHING_MODEL_PATH` – alternate model artifact path inside the container.
+     - `PHISHING_FRONTEND_BUILD` – static directory to serve (defaults to `/app/frontend/build` produced during the build).
+
+Visit `http://localhost:8000` to load the UI and POST to `http://localhost:8000/api/analyze` programmatically.

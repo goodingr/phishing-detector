@@ -1,10 +1,7 @@
 # Copy this file to ./fly.toml and replace placeholders before running `fly deploy`.
 
-app = "phihshing-detector"
+app = "phishing-detector"
 primary_region = "iad"
-
-[build]
-  image = "ghcr.io/goodingr/phishing-detector:latest"
 
 [env]
   PHISHING_MODEL_PATH = "/app/models/baseline_tfidf.joblib"

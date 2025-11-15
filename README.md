@@ -1,6 +1,6 @@
 # Phishing Detector
 
-Browser-based tool plus FastAPI backend for analyzing pasted emails and predicting whether they are safe or phishing.
+Browser-based tool plus FastAPI backend for analyzing pasted emails and predicting whether they are safe or phishing. Updated for auto-deploy smoke test.
 
 ## Features
 - Consolidates multiple labeled corpora (`emails/`, `emails2/`) into a canonical dataset via `scripts/prepare_dataset.py`.

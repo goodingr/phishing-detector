@@ -5,6 +5,7 @@ Browser-based tool plus FastAPI backend for analyzing pasted emails and predicti
 ## Features
 - Consolidates multiple labeled corpora (`emails/`, `emails2/`) into a canonical dataset via `scripts/prepare_dataset.py`.
 - Baseline TF-IDF + logistic regression model (`scripts/train_model.py`) with saved metrics.
+- Repository includes a pre-trained `models/baseline_tfidf.joblib` so CI/Fly deployments work out-of-the-box; retrain and replace it when updating the pipeline.
 - FastAPI service exposing `/api/analyze` and `/api/healthz`, loading the persisted model at startup.
 - React (CRA + TypeScript) frontend that lets users paste emails, hit “Analyze”, and view verdicts plus explanation signals.
 - Pytest and React Testing Library coverage, `Makefile` targets (`test-backend`, `test-frontend`, `build-frontend`).

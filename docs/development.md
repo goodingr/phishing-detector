@@ -18,6 +18,7 @@
    ```bash
    python scripts/train_model.py
    ```
+   The repo tracks `models/baseline_tfidf.joblib` and `models/baseline_metrics.json`. After retraining, commit the updated files so downstream builds/deployments (CI, Fly.io) include the new model.
 
 ## 3. Running the Backend API
 ```bash

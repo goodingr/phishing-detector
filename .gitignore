@@ -9,7 +9,9 @@ venv/
 
 # Data/model outputs
 data/processed/
-models/
+models/*
+!models/baseline_tfidf.joblib
+!models/baseline_metrics.json
 !models/.gitkeep
 emails/
 emails2/

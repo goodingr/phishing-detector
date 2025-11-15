@@ -36,6 +36,7 @@ npm install
 npm start
 ```
 Create a `.env` file (see `.env.example`) to point the UI at the desired API base URL.
+Optional: set `REACT_APP_GA_ID` to enable Google Analytics tracking when building the frontend.
 
 ## 5. Testing & CI Hooks
 - Backend tests (pytest): `make test-backend` or `python -m pytest`

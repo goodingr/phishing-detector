@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Tuple
 
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -65,6 +66,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=None,
         help="Optional cap on number of samples for quicker experiments.",
+    )
+    parser.add_argument(
+        "--test-predictions-output",
+        default=Path("models/test_predictions.csv"),
+        type=Path,
+        help="CSV file to record hold-out predictions for inspection.",
     )
     return parser.parse_args()
 
@@ -159,6 +166,25 @@ def main() -> None:
     args.metrics_output.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(pipeline, args.model_output)
     args.metrics_output.write_text(json.dumps(metrics, indent=2))
+
+    if hasattr(pipeline, "predict_proba"):
+        probs = pipeline.predict_proba(X_test)[:, 1]
+    elif hasattr(pipeline, "decision_function"):
+        decision = pipeline.decision_function(X_test)
+        probs = 1 / (1 + np.exp(-decision))
+    else:
+        probs = np.full(len(y_test), np.nan, dtype=float)
+    predictions = pipeline.predict(X_test)
+    report_df = pd.DataFrame(
+        {
+            "text": X_test.reset_index(drop=True),
+            "actual_label": y_test.reset_index(drop=True),
+            "predicted_label": predictions,
+            "probability_phishing": probs,
+        }
+    )
+    args.test_predictions_output.parent.mkdir(parents=True, exist_ok=True)
+    report_df.to_csv(args.test_predictions_output, index=False)
 
     print(f"Model saved to {args.model_output}")
     print(f"Metrics written to {args.metrics_output}")

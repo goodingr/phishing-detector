@@ -1,0 +1,166 @@
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #111827;
+  background-color: #f5f6fa;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f5f6fa;
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+main {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.analyze-form {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.analyze-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: #1f2937;
+  gap: 0.35rem;
+}
+
+.analyze-form input,
+.analyze-form textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.analyze-form textarea {
+  min-height: 120px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.form-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.form-actions button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-actions button.secondary {
+  background: transparent;
+  border: 1px solid #9ca3af;
+  color: #111827;
+}
+
+.form-actions button:not(.secondary) {
+  background: linear-gradient(120deg, #2563eb, #0ea5e9);
+  color: white;
+}
+
+.results-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  min-height: 180px;
+}
+
+.placeholder {
+  color: #6b7280;
+}
+
+.alert {
+  border-radius: 10px;
+  padding: 0.9rem;
+  font-weight: 600;
+}
+
+.alert.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.result-card {
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+.result-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+}
+
+.result-card.safe {
+  border-color: #bbf7d0;
+  background: #ecfdf5;
+}
+
+.result-card.phishing {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.result-card ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.probability {
+  font-weight: 700;
+  margin: 0;
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+@media (max-width: 640px) {
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

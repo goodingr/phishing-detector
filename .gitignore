@@ -31,6 +31,3 @@ frontend/.env
 # OS metadata
 .DS_Store
 Thumbs.db
-
-# Fly.io runtime config
-fly.toml

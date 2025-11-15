@@ -45,3 +45,10 @@ See `docs/development.md` for detailed workflows and testing instructions.
    docker run --rm -p 8000:8000 phishing-detector
    ```
    The container serves both the FastAPI backend (`/api/...`) and the React UI at `/`.
+
+## Continuous Integration
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push/PR:
+- Installs Python + Node dependencies, runs `pytest`, CRA tests, and builds the frontend.
+- When the `master` branch receives a push, the workflow builds the Docker image and publishes it to GitHub Container Registry under `ghcr.io/<owner>/phishing-detector:latest` and `:SHA`.
+
+Ensure GitHub Packages are enabled for your account/organization so the default `GITHUB_TOKEN` can push to GHCR.

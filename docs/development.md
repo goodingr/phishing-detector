@@ -58,3 +58,11 @@ These commands are suitable for local validation or plugging into CI pipelines.
      - `PHISHING_FRONTEND_BUILD` – static directory to serve (defaults to `/app/frontend/build` produced during the build).
 
 Visit `http://localhost:8000` to load the UI and POST to `http://localhost:8000/api/analyze` programmatically.
+
+## 7. Continuous Integration & Deployment
+- Workflow: `.github/workflows/ci.yml`
+  - Runs on pull requests and pushes.
+  - Steps: checkout → Python install + `pytest` → Node install + `npm ci` + frontend tests/build.
+  - On pushes to `master`, the workflow builds the Docker image and pushes it to GitHub Container Registry (`ghcr.io/<owner>/phishing-detector`) tagged as `latest` and the commit SHA.
+- Requirements: enable GitHub Packages for the repository/organization so the built-in `GITHUB_TOKEN` has permission to push to GHCR.
+- Customize by editing the workflow to add linting, extra tags, or deploy steps (e.g., to a cloud service).

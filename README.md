@@ -46,6 +46,17 @@ See `docs/development.md` for detailed workflows and testing instructions.
    ```
    The container serves both the FastAPI backend (`/api/...`) and the React UI at `/`.
 
+## Fly.io Deployment (free managed option)
+Leverage the GHCR image published by CI:
+1. Install Fly CLI (`https://fly.io/docs/hands-on/install-flyctl/`) and log in: `fly auth login`.
+2. Copy `fly/fly.toml.example` → `fly.toml`, set `app` to your Fly app name, and make sure `[build].image` matches `ghcr.io/goodingr/phishing-detector:latest` (or another tag).
+3. Authenticate Docker against GHCR (if the package is private): `echo <PAT> | docker login ghcr.io -u <github-user> --password-stdin`.
+4. Run `fly launch --no-deploy --copy-config` to register the app, then deploy the GHCR image:
+   ```bash
+   fly deploy --image ghcr.io/<owner>/phishing-detector:latest
+   ```
+Fly will host the container on `https://<app>.fly.dev`, handling HTTPS and infrastructure for free-tier usage. See `docs/development.md#7-flyio-deployment-using-ghcr-image` for detailed steps.
+
 ## Continuous Integration
 A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push/PR:
 - Installs Python + Node dependencies, runs `pytest`, CRA tests, and builds the frontend.

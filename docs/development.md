@@ -59,7 +59,35 @@ These commands are suitable for local validation or plugging into CI pipelines.
 
 Visit `http://localhost:8000` to load the UI and POST to `http://localhost:8000/api/analyze` programmatically.
 
-## 7. Continuous Integration & Deployment
+## 7. Fly.io Deployment (using GHCR image)
+1. Install the Fly CLI and authenticate:
+   ```bash
+   curl -L https://fly.io/install.sh | sh
+   fly auth login
+   ```
+2. Copy the template `fly/fly.toml.example` to the project root and adjust it:
+   ```bash
+   cp fly/fly.toml.example fly.toml
+   ```
+   - Set `app = "<your-app-name>"`.
+   - Confirm the `[build] image` matches the GHCR image produced by CI (e.g., `ghcr.io/goodingr/phishing-detector:latest`).
+3. Allow your local Docker to pull from GHCR (if private) so Flyctl can reuse it:
+   ```bash
+   echo <GITHUB_PAT> | docker login ghcr.io -u <github-username> --password-stdin
+   ```
+4. Create the Fly app (skipping build/deploy for now):
+   ```bash
+   fly launch --no-deploy --copy-config
+   ```
+5. Deploy using the published GHCR image (this copies the pulled image into Fly's registry and runs it):
+   ```bash
+   fly deploy --image ghcr.io/<owner>/phishing-detector:latest
+   ```
+6. Point DNS or use Fly's default hostname (e.g., `https://<app>.fly.dev`). The container serves both the API and the UI on port 8000 as defined in `fly.toml`.
+
+Optional: when GHCR images are private, keep your GitHub PAT in Fly secrets so redeploys can `docker login` automatically (e.g., use a custom deploy script or GitHub Actions to run `docker login` before `fly deploy`).
+
+## 8. Continuous Integration & Deployment
 - Workflow: `.github/workflows/ci.yml`
   - Runs on pull requests and pushes.
   - Steps: checkout → Python install + `pytest` → Node install + `npm ci` + frontend tests/build.

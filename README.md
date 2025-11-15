@@ -25,6 +25,7 @@ npm install
 npm start
 ```
 Set `REACT_APP_API_BASE` (see `frontend/.env.example`) if the API is hosted elsewhere.
+If unset, the frontend automatically points to the same origin it was served from, so a Fly deployment serving the API and UI together works without extra configuration.
 
 ## Project Layout
 - `scripts/`: data prep + training utilities

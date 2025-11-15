@@ -7,10 +7,11 @@ type AnalyzeResponse = {
   signals: string[];
 };
 
-const API_BASE = (process.env.REACT_APP_API_BASE || 'http://localhost:8000').replace(
-  /\/$/,
-  ''
-);
+const defaultApiBase =
+  process.env.REACT_APP_API_BASE ||
+  (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000');
+
+const API_BASE = defaultApiBase.replace(/\/$/, '');
 const ANALYZE_ENDPOINT = `${API_BASE}/api/analyze`;
 
 const initialForm = {

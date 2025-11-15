@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -10,8 +12,18 @@ from .settings import Settings, get_settings
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Phishing Email Analyzer", version="0.1.0")
     settings = get_settings()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        try:
+            analyzer = EmailAnalyzer.from_path(settings.model_path)
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"Model file missing: {exc}") from exc
+        app.state.analyzer = analyzer
+        yield
+
+    app = FastAPI(title="Phishing Email Analyzer", version="0.1.0", lifespan=lifespan)
 
     app.add_middleware(
         CORSMiddleware,
@@ -20,14 +32,6 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-    @app.on_event("startup")
-    def startup_event() -> None:
-        try:
-            analyzer = EmailAnalyzer.from_path(settings.model_path)
-        except FileNotFoundError as exc:
-            raise RuntimeError(f"Model file missing: {exc}") from exc
-        app.state.analyzer = analyzer
 
     def get_analyzer(settings: Settings = Depends(get_settings)) -> EmailAnalyzer:
         analyzer = getattr(app.state, "analyzer", None)

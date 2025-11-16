@@ -1,14 +1,14 @@
 # Phishing Detector
 
-Browser-based tool plus FastAPI backend for analyzing pasted emails and predicting whether they are safe or phishing. Updated for auto-deploy smoke test.
+Phishing Detector is a full-stack web app that lets users paste suspicious emails, runs them through an NLP classifier, and returns an explanation-backed verdict (Safe vs Potential Phishing). It combines a Python/FastAPI backend, a React frontend, and a reproducible ML training pipeline.
 
 ## Features
-- Consolidates multiple labeled corpora (`emails/`, `emails2/`) into a canonical dataset via `scripts/prepare_dataset.py`.
-- Baseline TF-IDF + logistic regression model (`scripts/train_model.py`) with saved metrics.
-- Repository includes a pre-trained `models/baseline_tfidf.joblib` so CI/Fly deployments work out-of-the-box; retrain and replace it when updating the pipeline.
-- FastAPI service exposing `/api/analyze` and `/api/healthz`, loading the persisted model at startup.
-- React (CRA + TypeScript) frontend that lets users paste emails, hit “Analyze”, and view verdicts plus explanation signals.
-- Pytest and React Testing Library coverage, `Makefile` targets (`test-backend`, `test-frontend`, `build-frontend`).
+- **Rich datasets**: consolidates multiple labeled corpora (`emails/`, `emails2/`) into a canonical table via `scripts/prepare_dataset.py`.
+- **Baseline ML pipeline**: TF-IDF + logistic regression (`scripts/train_model.py`) with persisted metrics and a pre-trained `models/baseline_tfidf.joblib` for turnkey deploys.
+- **Confidence reports**: training now outputs `models/test_predictions.csv` so you can inspect hold-out predictions and tweak thresholds to reduce false positives.
+- **FastAPI backend**: `/api/analyze` and `/api/healthz`, model loading via lifespan events, static frontend hosting, optional heuristics.
+- **React front end**: CRA (TypeScript) UI with origin-aware API base, better loading states, and optional Google Analytics (`REACT_APP_GA_ID`).
+- **Testing & CI**: pytest, React Testing Library, `Makefile` shortcuts, and a GitHub Actions workflow that runs tests and publishes Docker images to GHCR.
 
 ## Quickstart
 ```bash
@@ -24,9 +24,9 @@ cd frontend
 npm install
 npm start
 ```
-Set `REACT_APP_API_BASE` (see `frontend/.env.example`) if the API is hosted elsewhere.
-If unset, the frontend automatically points to the same origin it was served from, so a Fly deployment serving the API and UI together works without extra configuration.
-Add optional `REACT_APP_GA_ID` to enable Google Analytics (gtag) tracking in production builds.
+Set `REACT_APP_API_BASE` (see `frontend/.env.example`) if you’re calling a remote API.
+If unset, the frontend targets the same origin it was loaded from—ideal for Fly or Docker where the UI and API share a host.
+Add optional `REACT_APP_GA_ID` to enable Google Analytics (gtag) tracking.
 
 ## Project Layout
 - `scripts/`: data prep + training utilities
@@ -50,15 +50,21 @@ See `docs/development.md` for detailed workflows and testing instructions.
    The container serves both the FastAPI backend (`/api/...`) and the React UI at `/`.
 
 ## Fly.io Deployment (free managed option)
-Leverage the GHCR image published by CI:
+### Auto-build from GitHub
 1. Install Fly CLI (`https://fly.io/docs/hands-on/install-flyctl/`) and log in: `fly auth login`.
-2. Copy `fly/fly.toml.example` → `fly.toml`, set `app` to your Fly app name, and make sure `[build].image` matches `ghcr.io/goodingr/phishing-detector:latest` (or another tag).
-3. Authenticate Docker against GHCR (if the package is private): `echo <PAT> | docker login ghcr.io -u <github-user> --password-stdin`.
-4. Run `fly launch --no-deploy --copy-config` to register the app, then deploy the GHCR image:
+2. Copy `fly/fly.toml.example` → `fly.toml`, set `app = "<your-fly-app>"`.
+3. Connect the Fly app to your GitHub repo/branch (e.g., `master`) via the Fly dashboard.
+4. Click “Deploy” (or push to the tracked branch). Fly clones the repo, builds the Dockerfile, and serves the app at `https://<app>.fly.dev`.
+
+### Manual image deploy (optional)
+1. Build/push the Docker image to GHCR:
    ```bash
-   fly deploy --image ghcr.io/<owner>/phishing-detector:latest
+   docker build -t ghcr.io/<owner>/phishing-detector:latest .
+   docker push ghcr.io/<owner>/phishing-detector:latest
    ```
-Fly will host the container on `https://<app>.fly.dev`, handling HTTPS and infrastructure for free-tier usage. See `docs/development.md#7-flyio-deployment-using-ghcr-image` for detailed steps.
+2. `fly deploy --image ghcr.io/<owner>/phishing-detector:latest`
+
+Refer to `docs/development.md` for secret management (e.g., `REACT_APP_GA_ID`, GHCR credentials) and troubleshooting.
 
 ## Continuous Integration
 A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push/PR:
